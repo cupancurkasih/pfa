@@ -34,7 +34,7 @@ jobs:
             git pull "https://cupkdev:${{ secrets.GITHUB_TOKEN }}@github.com/cupancurkasih/pfa.git" main
 
             # Build Docker image
-            docker build --tag pfa-docker .
+            docker build --tag pfa-docker -f Dockerfile .
 
             # Stop existing container if running
             docker stop pfa-docker || true
