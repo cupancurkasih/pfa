@@ -33,19 +33,19 @@ jobs:
             # Update repository
             git pull "https://cupkdev:${{ secrets.GITHUB_TOKEN }}@github.com/cupancurkasih/pfa.git" main
 
+            # Build Docker image
+            sudo docker build --tag pfa-image .
+
             # Stop existing container if running
             sudo docker stop pfa-docker || true
             sudo docker rm pfa-docker || true
-
-            # Build Docker image
-            sudo docker build --tag pfa-docker .
 
             # Run new container
             sudo docker run -d \
               --name pfa-docker \
               --restart always \
               -p 5123:5123 \
-              pfa-docker
+              pfa-image
             
             # Check container status
             sudo docker ps | grep pfa-container
