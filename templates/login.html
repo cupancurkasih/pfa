@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Personal Financial Assistant - CUPK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card neumorph">
+            <h2 class="auth-title"><i class="fas fa-coins" style="color: var(--primary-color); margin-right: 10px;"></i> Personal Financial Assistant</h2>
+            <p class="auth-subtitle">Login untuk melanjutkan ke dashboard keuangan Anda</p>
+            
+            <form action="{{ url_for('login') }}" method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <div class="neumorph-inset">
+                        <input type="text" id="username" name="username" class="form-input" placeholder="Masukkan username Anda" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="neumorph-inset">
+                        <input type="password" id="password" name="password" class="form-input" placeholder="Masukkan password Anda" required>
+                    </div>
+                </div>
+                
+                {% if error %}
+                <div class="error-message" style="color: var(--error-color); margin-bottom: 1rem; text-align: center;">
+                    {{ error }}
+                </div>
+                {% endif %}
+                
+                <button type="submit" class="btn btn-primary neumorph">Login</button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Belum memiliki akun? <a href="{{ url_for('register') }}" class="auth-link">Daftar</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>
