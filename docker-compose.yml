@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  pfa-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pfa-docker
+    container_name: pfa-container
+    ports:
+      - "5123:5123"
+    volumes:
+      # Mount the local instance folder to persist database files
+      - ./instance:/app/instance
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=production
