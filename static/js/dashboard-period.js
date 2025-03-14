@@ -340,18 +340,18 @@ function updatePieChart(categoryData) {
         return;
     }
     
-    // Prepare canvas
-    const pieCanvas = document.getElementById('pie-chart');
-    const pieCtx = pieCanvas.getContext('2d');
-    
-    // Clear any existing HTML content
-    document.getElementById('expense-distribution-chart').innerHTML = '';
-    document.getElementById('expense-distribution-chart').appendChild(pieCanvas);
-    
-    // Destroy existing chart if it exists
+    // First, check if there's an existing chart and destroy it
     if (window.pieChart) {
         window.pieChart.destroy();
     }
+    
+    // Clear the container and create a new canvas
+    const container = document.getElementById('expense-distribution-chart');
+    container.innerHTML = '<canvas id="pie-chart"></canvas>';
+    
+    // Get the new canvas and its context
+    const pieCanvas = document.getElementById('pie-chart');
+    const pieCtx = pieCanvas.getContext('2d');
     
     // Extract data for pie chart
     const pieLabels = categoryData.map(item => item.category);
