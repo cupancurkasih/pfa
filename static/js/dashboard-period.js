@@ -343,42 +343,66 @@ function updatePieChart(categoryData) {
     // First, check if there's an existing chart and destroy it
     if (window.pieChart) {
         window.pieChart.destroy();
+        window.pieChart = null;
     }
     
-    // Clear the container and create a new canvas
+    // Clear the container
     const container = document.getElementById('expense-distribution-chart');
-    container.innerHTML = '<canvas id="pie-chart"></canvas>';
+    container.innerHTML = '';
     
-    // Get the new canvas and its context
-    const pieCanvas = document.getElementById('pie-chart');
-    const pieCtx = pieCanvas.getContext('2d');
+    // Create a new canvas with explicit dimensions
+    const pieCanvas = document.createElement('canvas');
+    pieCanvas.id = 'pie-chart';
+    pieCanvas.width = 400;  // Set explicit width
+    pieCanvas.height = 400; // Set explicit height
+    pieCanvas.style.maxWidth = '100%'; // Make it responsive
     
-    // Extract data for pie chart
-    const pieLabels = categoryData.map(item => item.category);
-    const pieValues = categoryData.map(item => item.amount);
+    // Append the canvas to the container
+    container.appendChild(pieCanvas);
     
-    // Create new chart
-    window.pieChart = new Chart(pieCtx, {
-        type: 'pie',
-        data: {
-            labels: pieLabels,
-            datasets: [{
-                data: pieValues,
-                backgroundColor: [
-                    'rgba(90, 129, 250, 0.8)',
-                    'rgba(255, 99, 132, 0.8)',
-                    'rgba(255, 205, 86, 0.8)',
-                    'rgba(75, 192, 192, 0.8)',
-                    'rgba(153, 102, 255, 0.8)',
-                    'rgba(255, 159, 64, 0.8)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true
+    // Make sure the canvas is visible in the DOM before creating the chart
+    setTimeout(() => {
+        try {
+            // Get the context
+            const pieCtx = pieCanvas.getContext('2d');
+            
+            if (!pieCtx) {
+                console.error('Failed to get 2D context from canvas');
+                return;
+            }
+            
+            // Extract data for pie chart
+            const pieLabels = categoryData.map(item => item.category);
+            const pieValues = categoryData.map(item => item.amount);
+            
+            // Create new chart
+            window.pieChart = new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: pieLabels,
+                    datasets: [{
+                        data: pieValues,
+                        backgroundColor: [
+                            'rgba(90, 129, 250, 0.8)',
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(255, 205, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(255, 159, 64, 0.8)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        } catch (error) {
+            console.error('Error creating pie chart:', error);
+            container.innerHTML = "<p style='text-align: center; padding: 20px;'>Error creating chart</p>";
         }
-    });
+    }, 50); // Small delay to ensure DOM is updated
 }
 
 // Function untuk update tabel kategori

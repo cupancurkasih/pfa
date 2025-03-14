@@ -693,6 +693,8 @@ def api_dashboard_summary():
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)})
+    
+# Tambahkan endpoint API berikut ke app.py
 
 @app.route('/api/reports', methods=['GET'])
 @login_required
