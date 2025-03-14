@@ -1,0 +1,56 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: production
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy and Build with Docker via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{secrets.VPS_SSH_HOST}}
+          username: ${{secrets.VPS_SSH_USERNAME}}
+          password: ${{secrets.VPS_SSH_PASSWORD}}
+          port: ${{secrets.VPS_SSH_PORT}}
+          script: |
+            # Source profile for environment variables
+            source ~/.profile
+
+            # Navigate to project directory
+            cd /apps/pfa
+
+            # Update repository
+            git pull "https://cupkdev:${{ secrets.GITHUB_TOKEN }}@github.com/cupancurkasih/pfa.git" main
+
+            # Build Docker image
+            docker build --tag pfa-docker .
+
+            # Stop existing container if running
+            docker stop pfa-docker || true
+            docker rm pfa-docker || true
+
+            # Run new container
+            docker run -d \
+              --name pfa-docker \
+              --restart always \
+              -p 5123:5123 \
+              pfa-docker
+            
+            # Check container status
+            docker ps | grep pfa-container
+
+            # Clean up unused images to free disk space
+            docker image prune -f
+
+            echo "Deployment completed successfully!"

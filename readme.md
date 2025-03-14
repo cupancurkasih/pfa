@@ -69,6 +69,17 @@ Personal Financial Assistant by CUPK merupakan aplikasi sederhana untuk membantu
 
 5. Akses aplikasi melalui browser di alamat http://127.0.0.1:5000
 
+## Deploy Aplikasi
+1. Jalankan
+   ```
+   sudo docker build --tag pfa-docker .
+   ```
+
+2. kemudian jalankan
+   ``` 
+   sudo docker run -d -p 5123:5123 pfa-docker 
+   ```
+
 ## Struktur Database
 
 Aplikasi menggunakan SQLite sebagai database. Struktur database terdiri dari:
@@ -123,5 +134,7 @@ Silakan berkontribusi pada pengembangan aplikasi ini dengan mengirimkan pull req
 Aplikasi ini bersifat open source dan dapat digunakan secara bebas untuk kepentingan pribadi atau pendidikan.
 
 ---
+
+
 
 Dibuat dengan ❤️ oleh CUPK
