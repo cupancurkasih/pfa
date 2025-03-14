@@ -28,7 +28,7 @@ jobs:
             source ~/.profile
 
             # Navigate to project directory
-            cd /apps/pfa
+            cd /app/pfa
 
             # Update repository
             git pull "https://cupkdev:${{ secrets.GITHUB_TOKEN }}@github.com/cupancurkasih/pfa.git" main
