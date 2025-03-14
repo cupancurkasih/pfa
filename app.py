@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash, Blueprint
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
@@ -11,9 +11,8 @@ from datetime import datetime
 import pandas as pd
 import calendar
 
-
-
 app = Flask(__name__)
+app.config["APPLICATION_ROOT"] = "pfa"
 app.secret_key = 'pfa_cupk_secret_key'  # Gunakan secret key yang aman untuk produksi
 
 # Konfigurasi Flask-Login
