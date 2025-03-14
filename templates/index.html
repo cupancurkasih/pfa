@@ -52,104 +52,207 @@
 
             <!-- Content Area -->
             <div class="content neumorph">
-                <!-- Dashboard Page -->
-                <div id="dashboard-page">
-                    <h2 class="section-title"><i class="fas fa-tachometer-alt" style="margin-right: 10px;"></i> Dashboard Keuangan</h2>
+                <!-- Dashboard Page dengan Fitur Ringkasan Bulanan dan Tahunan -->
+            <div id="dashboard-page">
+                <h2 class="section-title"><i class="fas fa-tachometer-alt" style="margin-right: 10px;"></i> Dashboard Keuangan</h2>
+                
+                <!-- Filter Periode -->
+                <div class="neumorph" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div class="period-selector">
+                        <span style="margin-right: 10px;"><i class="fas fa-calendar-alt"></i> Periode:</span>
+                        <div class="button-group neumorph-inset" style="display: inline-flex; padding: 0.3rem; border-radius: var(--border-radius);">
+                            <button id="monthly-view" class="period-btn active" style="padding: 0.5rem 1rem; border: none; background: none; border-radius: var(--border-radius); cursor: pointer;">Bulanan</button>
+                            <button id="yearly-view" class="period-btn" style="padding: 0.5rem 1rem; border: none; background: none; border-radius: var(--border-radius); cursor: pointer;">Tahunan</button>
+                        </div>
+                    </div>
                     
-                    <div class="stats-container">
-                        <div class="stat-card neumorph">
-                            <div class="stat-icon"><i class="fas fa-hand-holding-usd" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;"></i></div>
-                            <div class="stat-title">Total Pendapatan Bulan Ini</div>
-                            <div class="stat-value">Rp {{ "{:,.0f}".format(total_income|default(0)) }}</div>
-                            <div class="stat-desc">
+                    <div class="period-dropdown">
+                        <!-- Dropdown bulanan -->
+                        <div id="monthly-dropdown" class="neumorph-inset" style="display: inline-block; padding: 0.5rem 1rem; min-width: 180px;">
+                            <select id="month-selector" class="form-select" style="border: none; background: transparent; width: 100%;">
+                                <option value="1">Januari</option>
+                                <option value="2">Februari</option>
+                                <option value="3">Maret</option>
+                                <option value="4">April</option>
+                                <option value="5">Mei</option>
+                                <option value="6">Juni</option>
+                                <option value="7">Juli</option>
+                                <option value="8">Agustus</option>
+                                <option value="9">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Dropdown tahunan (hidden by default) -->
+                        <div id="yearly-dropdown" class="neumorph-inset" style="display: none; padding: 0.5rem 1rem; min-width: 180px;">
+                            <select id="year-selector" class="form-select" style="border: none; background: transparent; width: 100%;">
+                                <!-- Ini akan diisi dengan JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stats Container -->
+                <div class="stats-container">
+                    <!-- Monthly/Yearly Income Card -->
+                    <div class="stat-card neumorph">
+                        <div class="stat-icon"><i class="fas fa-hand-holding-usd" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;"></i></div>
+                        <div class="stat-title">
+                            <span class="monthly-label">Total Pendapatan Bulan Ini</span>
+                            <span class="yearly-label" style="display: none;">Total Pendapatan Tahun Ini</span>
+                        </div>
+                        <div class="stat-value" id="total-income-value">Rp {{ "{:,.0f}".format(total_income|default(0)) }}</div>
+                        <div class="stat-desc">
+                            <span id="income-trend">
                                 {% if total_income > 0 %}
                                 <i class="fas fa-arrow-up" style="color: #51cf66;"></i> Pendapatan terkini
                                 {% else %}
                                 <i class="fas fa-minus" style="color: #6c757d;"></i> Belum ada pendapatan
                                 {% endif %}
-                            </div>
+                            </span>
                         </div>
-                        
-                        <div class="stat-card neumorph">
-                            <div class="stat-icon"><i class="fas fa-shopping-bag" style="font-size: 2rem; color: #ff6b6b; margin-bottom: 1rem;"></i></div>
-                            <div class="stat-title">Total Pengeluaran Bulan Ini</div>
-                            <div class="stat-value">Rp {{ "{:,.0f}".format(total_expense|default(0)) }}</div>
-                            <div class="stat-desc">
+                    </div>
+                    
+                    <!-- Monthly/Yearly Expense Card -->
+                    <div class="stat-card neumorph">
+                        <div class="stat-icon"><i class="fas fa-shopping-bag" style="font-size: 2rem; color: #ff6b6b; margin-bottom: 1rem;"></i></div>
+                        <div class="stat-title">
+                            <span class="monthly-label">Total Pengeluaran Bulan Ini</span>
+                            <span class="yearly-label" style="display: none;">Total Pengeluaran Tahun Ini</span>
+                        </div>
+                        <div class="stat-value" id="total-expense-value">Rp {{ "{:,.0f}".format(total_expense|default(0)) }}</div>
+                        <div class="stat-desc">
+                            <span id="expense-trend">
                                 {% if total_expense > 0 %}
                                 <i class="fas fa-arrow-up" style="color: #ff6b6b;"></i> Pengeluaran terkini
                                 {% else %}
                                 <i class="fas fa-minus" style="color: #6c757d;"></i> Belum ada pengeluaran
                                 {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card neumorph">
-                            <div class="stat-icon"><i class="fas fa-piggy-bank" style="font-size: 2rem; color: #20c997; margin-bottom: 1rem;"></i></div>
-                            <div class="stat-title">Saldo Bulan Ini</div>
-                            <div class="stat-value">Rp {{ "{:,.0f}".format(balance|default(0)) }}</div>
-                            <div class="stat-desc">
-                                <i class="fas fa-percentage" style="color: #20c997;"></i> {{ "{:.0f}".format(balance_percentage|default(0)) }}% dari pendapatan
-                            </div>
+                            </span>
                         </div>
                     </div>
                     
-                    <div class="charts-container">
-                        <div class="chart-card neumorph">
-                            <div class="chart-title"><i class="fas fa-balance-scale" style="margin-right: 8px;"></i> Perbandingan Pendapatan & Pengeluaran</div>
-                            <div class="chart-area" id="income-expense-chart">
-                                <canvas id="bar-chart"></canvas>
-                            </div>
+                    <!-- Monthly/Yearly Balance Card -->
+                    <div class="stat-card neumorph">
+                        <div class="stat-icon"><i class="fas fa-piggy-bank" style="font-size: 2rem; color: #20c997; margin-bottom: 1rem;"></i></div>
+                        <div class="stat-title">
+                            <span class="monthly-label">Saldo Bulan Ini</span>
+                            <span class="yearly-label" style="display: none;">Saldo Tahun Ini</span>
                         </div>
-                        
-                        <div class="chart-card neumorph">
-                            <div class="chart-title"><i class="fas fa-chart-pie" style="margin-right: 8px;"></i> Distribusi Pengeluaran</div>
-                            <div class="chart-area" id="expense-distribution-chart">
-                                <canvas id="pie-chart"></canvas>
-                            </div>
+                        <div class="stat-value" id="balance-value">Rp {{ "{:,.0f}".format(balance|default(0)) }}</div>
+                        <div class="stat-desc">
+                            <i class="fas fa-percentage" style="color: #20c997;"></i> <span id="balance-percentage">{{ "{:.0f}".format(balance_percentage|default(0)) }}%</span> dari pendapatan
                         </div>
-                    </div>
-                    
-                    <div class="neumorph" style="padding: 1.5rem;">
-                        <h3 class="chart-title"><i class="fas fa-tags" style="margin-right: 8px;"></i> Rekap Kategori Pengeluaran</h3>
-                        <table class="category-table">
-                            <thead>
-                                <tr>
-                                    <th>Kategori</th>
-                                    <th>Jumlah</th>
-                                    <th>Persentase</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if category_data %}
-                                    {% for category in category_data %}
-                                    <tr>
-                                        <td>
-                                            {% if category.category == 'Kebutuhan Pokok' %}
-                                                <i class="fas fa-home" style="color: var(--primary-color); margin-right: 10px;"></i>
-                                            {% elif category.category == 'Keinginan' %}
-                                                <i class="fas fa-coffee" style="color: #ff6b6b; margin-right: 10px;"></i>
-                                            {% elif category.category == 'Tabungan/Investasi' %}
-                                                <i class="fas fa-chart-line" style="color: #20c997; margin-right: 10px;"></i>
-                                            {% elif category.category == 'Amal/Donasi' %}
-                                                <i class="fas fa-hand-holding-heart" style="color: #9775fa; margin-right: 10px;"></i>
-                                            {% else %}
-                                                <i class="fas fa-money-bill-wave" style="color: var(--primary-color); margin-right: 10px;"></i>
-                                            {% endif %}
-                                            {{ category.category }}
-                                        </td>
-                                        <td>Rp {{ "{:,.0f}".format(category.amount|default(0)) }}</td>
-                                        <td>{{ "{:.1f}".format(category.percentage|default(0)) }}%</td>
-                                    </tr>
-                                    {% endfor %}
-                                {% else %}
-                                    <tr>
-                                        <td colspan="3" style="text-align: center;">Belum ada data kategori pengeluaran</td>
-                                    </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
                     </div>
                 </div>
+                
+                <!-- Chart Container -->
+                <div class="charts-container">
+                    <!-- Monthly Chart -->
+                    <div id="monthly-chart-container" class="chart-card neumorph">
+                        <div class="chart-title"><i class="fas fa-balance-scale" style="margin-right: 8px;"></i> Perbandingan Pendapatan & Pengeluaran per Hari</div>
+                        <div class="chart-area">
+                            <canvas id="monthly-bar-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Yearly Chart -->
+                    <div id="yearly-chart-container" class="chart-card neumorph" style="display: none;">
+                        <div class="chart-title"><i class="fas fa-balance-scale" style="margin-right: 8px;"></i> Perbandingan Pendapatan & Pengeluaran per Bulan</div>
+                        <div class="chart-area">
+                            <canvas id="yearly-bar-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Expense Distribution Chart -->
+                    <div class="chart-card neumorph">
+                        <div class="chart-title">
+                            <i class="fas fa-chart-pie" style="margin-right: 8px;"></i>
+                            <span class="monthly-label">Distribusi Pengeluaran Bulan Ini</span>
+                            <span class="yearly-label" style="display: none;">Distribusi Pengeluaran Tahun Ini</span>
+                        </div>
+                        <div class="chart-area" id="expense-distribution-chart">
+                            <canvas id="pie-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Category Summary Table -->
+                <div class="neumorph" style="padding: 1.5rem;">
+                    <h3 class="chart-title">
+                        <i class="fas fa-tags" style="margin-right: 8px;"></i>
+                        <span class="monthly-label">Rekap Kategori Pengeluaran Bulan Ini</span>
+                        <span class="yearly-label" style="display: none;">Rekap Kategori Pengeluaran Tahun Ini</span>
+                    </h3>
+                    <table class="category-table">
+                        <thead>
+                            <tr>
+                                <th>Kategori</th>
+                                <th>Jumlah</th>
+                                <th>Persentase</th>
+                            </tr>
+                        </thead>
+                        <tbody id="category-table-body">
+                            {% if category_data %}
+                                {% for category in category_data %}
+                                <tr>
+                                    <td>
+                                        {% if category.category == 'Kebutuhan Pokok' %}
+                                            <i class="fas fa-home" style="color: var(--primary-color); margin-right: 10px;"></i>
+                                        {% elif category.category == 'Keinginan' %}
+                                            <i class="fas fa-coffee" style="color: #ff6b6b; margin-right: 10px;"></i>
+                                        {% elif category.category == 'Tabungan/Investasi' %}
+                                            <i class="fas fa-chart-line" style="color: #20c997; margin-right: 10px;"></i>
+                                        {% elif category.category == 'Amal/Donasi' %}
+                                            <i class="fas fa-hand-holding-heart" style="color: #9775fa; margin-right: 10px;"></i>
+                                        {% else %}
+                                            <i class="fas fa-money-bill-wave" style="color: var(--primary-color); margin-right: 10px;"></i>
+                                        {% endif %}
+                                        {{ category.category }}
+                                    </td>
+                                    <td>Rp {{ "{:,.0f}".format(category.amount|default(0)) }}</td>
+                                    <td>{{ "{:.1f}".format(category.percentage|default(0)) }}%</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" style="text-align: center;">Belum ada data kategori pengeluaran</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Yearly Summary (Hidden by default) -->
+                <div id="yearly-summary" class="neumorph" style="padding: 1.5rem; margin-top: 1.5rem; display: none;">
+                    <h3 class="chart-title"><i class="fas fa-calendar-alt" style="margin-right: 8px;"></i> Ringkasan Tahunan</h3>
+                    <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                        <!-- Top Income Months -->
+                        <div class="neumorph" style="flex: 1; min-width: 250px; padding: 1rem;">
+                            <h4 style="font-size: 1rem; color: var(--secondary-color); margin-bottom: 1rem;">
+                                <i class="fas fa-arrow-up" style="color: var(--primary-color);"></i> Bulan dengan Pendapatan Tertinggi
+                            </h4>
+                            <div id="top-income-months">
+                                <!-- Will be filled with JavaScript -->
+                                <div style="text-align: center; padding: 1rem;">Memuat data...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Top Expense Months -->
+                        <div class="neumorph" style="flex: 1; min-width: 250px; padding: 1rem;">
+                            <h4 style="font-size: 1rem; color: var(--secondary-color); margin-bottom: 1rem;">
+                                <i class="fas fa-arrow-down" style="color: #ff6b6b;"></i> Bulan dengan Pengeluaran Tertinggi
+                            </h4>
+                            <div id="top-expense-months">
+                                <!-- Will be filled with JavaScript -->
+                                <div style="text-align: center; padding: 1rem;">Memuat data...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 
                 <!-- Income Page -->
                 <div id="income-page" class="hidden">
@@ -1014,5 +1117,6 @@
             });
         }
     </script>
+    <script src="{{ url_for('static', filename='js/dashboard-period.js') }}"></script>
 </body>
 </html>

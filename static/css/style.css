@@ -472,3 +472,29 @@ main {
 .hidden {
     display: none !important;
 }
+
+.period-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.period-btn.active {
+    background-color: var(--background);
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+}
+
+/* Style untuk ringkasan tahunan */
+.top-month-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.top-month-item:last-child {
+    border-bottom: none;
+}

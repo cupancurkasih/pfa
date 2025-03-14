@@ -6,6 +6,7 @@ import os
 import json
 from datetime import datetime
 import pandas as pd
+import calendar
 
 app = Flask(__name__)
 app.secret_key = 'pfa_cupk_secret_key'  # Gunakan secret key yang aman untuk produksi
@@ -518,6 +519,179 @@ def api_delete_expense(expense_id):
         
         return jsonify({'success': True})
     except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+    
+# Tambahkan endpoint untuk dashboard summary
+@app.route('/api/dashboard-summary', methods=['GET'])
+@login_required
+def api_dashboard_summary():
+    username = current_user.username
+    
+    # Get period type and date range from request
+    period = request.args.get('period', 'monthly')  # 'monthly' or 'yearly'
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    # Check if date parameters are provided
+    if not start_date or not end_date:
+        return jsonify({'success': False, 'error': 'Parameter tanggal tidak lengkap.'})
+    
+    try:
+        # Get income and expense data
+        income_data = get_income_data(username)
+        expense_data = get_expense_data(username)
+        
+        # Filter data by date range
+        filtered_income = [inc for inc in income_data if start_date <= inc['date'] <= end_date]
+        filtered_expense = [exp for exp in expense_data if start_date <= exp['date'] <= end_date]
+        
+        # Calculate total income and expense
+        total_income = sum(inc['amount'] for inc in filtered_income)
+        total_expense = sum(exp['amount'] for exp in filtered_expense)
+        balance = total_income - total_expense
+        
+        # Calculate expense by category
+        expense_by_category = {}
+        for exp in filtered_expense:
+            category = exp['category']
+            if category not in expense_by_category:
+                expense_by_category[category] = 0
+            expense_by_category[category] += exp['amount']
+        
+        # Prepare category data
+        category_data = []
+        for category, amount in expense_by_category.items():
+            percentage = (amount / total_expense * 100) if total_expense > 0 else 0
+            category_data.append({
+                'category': category,
+                'amount': amount,
+                'percentage': round(percentage, 2)
+            })
+        
+        # Calculate previous period data for trend comparison
+        income_trend = 0
+        expense_trend = 0
+        
+        # Parse date strings to datetime objects
+        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+        end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+        
+        # For monthly data
+        if period == 'monthly':
+            # Calculate previous month's date range
+            if start_dt.month == 1:
+                prev_month = 12
+                prev_year = start_dt.year - 1
+            else:
+                prev_month = start_dt.month - 1
+                prev_year = start_dt.year
+                
+            prev_month_str = str(prev_month).zfill(2)
+            prev_year_str = str(prev_year)
+            
+            # Get days in previous month
+            prev_month_last_day = calendar.monthrange(prev_year, prev_month)[1]
+            
+            prev_start_date = f"{prev_year_str}-{prev_month_str}-01"
+            prev_end_date = f"{prev_year_str}-{prev_month_str}-{prev_month_last_day}"
+            
+            # Calculate previous month's totals
+            prev_income = sum(inc['amount'] for inc in income_data if prev_start_date <= inc['date'] <= prev_end_date)
+            prev_expense = sum(exp['amount'] for exp in expense_data if prev_start_date <= exp['date'] <= prev_end_date)
+            
+            # Calculate trends
+            if prev_income > 0:
+                income_trend = ((total_income - prev_income) / prev_income * 100)
+            if prev_expense > 0:
+                expense_trend = ((total_expense - prev_expense) / prev_expense * 100)
+            
+            # Prepare daily data for chart
+            daily_labels = []
+            daily_income = []
+            daily_expense = []
+            
+            # Get number of days in current month
+            days_in_month = (end_dt - start_dt).days + 1
+            
+            # Initialize data for each day
+            for day in range(1, days_in_month + 1):
+                # Format date label
+                day_str = str(day).zfill(2)
+                day_date = f"{start_dt.year}-{start_dt.month:02d}-{day_str}"
+                day_label = f"{day}"
+                
+                # Add to labels
+                daily_labels.append(day_label)
+                
+                # Calculate daily income and expense
+                day_income = sum(inc['amount'] for inc in filtered_income if inc['date'].endswith(f"-{day_str}"))
+                day_expense = sum(exp['amount'] for exp in filtered_expense if exp['date'].endswith(f"-{day_str}"))
+                
+                daily_income.append(day_income)
+                daily_expense.append(day_expense)
+            
+            # Prepare response data
+            response_data = {
+                'success': True,
+                'total_income': total_income,
+                'total_expense': total_expense,
+                'balance': balance,
+                'income_trend': round(income_trend, 1),
+                'expense_trend': round(expense_trend, 1),
+                'category_data': category_data,
+                'daily_labels': daily_labels,
+                'daily_income': daily_income,
+                'daily_expense': daily_expense
+            }
+            
+        # For yearly data
+        else:
+            # Calculate previous year
+            prev_year = start_dt.year - 1
+            prev_start_date = f"{prev_year}-01-01"
+            prev_end_date = f"{prev_year}-12-31"
+            
+            # Calculate previous year's totals
+            prev_income = sum(inc['amount'] for inc in income_data if prev_start_date <= inc['date'] <= prev_end_date)
+            prev_expense = sum(exp['amount'] for exp in expense_data if prev_start_date <= exp['date'] <= prev_end_date)
+            
+            # Calculate trends
+            if prev_income > 0:
+                income_trend = ((total_income - prev_income) / prev_income * 100)
+            if prev_expense > 0:
+                expense_trend = ((total_expense - prev_expense) / prev_expense * 100)
+            
+            # Prepare monthly data for chart
+            monthly_income = [0] * 12
+            monthly_expense = [0] * 12
+            
+            # Calculate monthly totals
+            for inc in filtered_income:
+                month_idx = int(inc['date'].split('-')[1]) - 1
+                monthly_income[month_idx] += inc['amount']
+            
+            for exp in filtered_expense:
+                month_idx = int(exp['date'].split('-')[1]) - 1
+                monthly_expense[month_idx] += exp['amount']
+            
+            # Prepare response data
+            response_data = {
+                'success': True,
+                'total_income': total_income,
+                'total_expense': total_expense,
+                'balance': balance,
+                'income_trend': round(income_trend, 1),
+                'expense_trend': round(expense_trend, 1),
+                'category_data': category_data,
+                'monthly_income': monthly_income,
+                'monthly_expense': monthly_expense
+            }
+        
+        return jsonify(response_data)
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/api/reports', methods=['GET'])
