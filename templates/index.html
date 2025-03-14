@@ -285,7 +285,7 @@
                             <div class="form-group">
                                 <label for="income-amount" class="form-label">Jumlah (Rp)</label>
                                 <div class="neumorph-inset">
-                                    <input type="number" id="income-amount" class="form-input" placeholder="Masukkan jumlah" required min="0">
+                                    <input type="text" id="income-amount" class="form-input" placeholder="Masukkan jumlah" required>
                                 </div>
                             </div>
                             
@@ -368,7 +368,7 @@
                             <div class="form-group">
                                 <label for="expense-amount" class="form-label">Jumlah (Rp)</label>
                                 <div class="neumorph-inset">
-                                    <input type="number" id="expense-amount" class="form-input" placeholder="Masukkan jumlah" required min="0">
+                                    <input type="text" id="expense-amount" class="form-input" placeholder="Masukkan jumlah" required>
                                 </div>
                             </div>
                             
@@ -475,8 +475,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.7.1/chart.min.js"></script>
     <script>
         // Mendapatkan data chart dari backend dalam format JSON
-        const chartData = {{ chart_data_json|safe }};
-        const categoryData = {{ category_data_json|safe }};
+        const chartData = JSON.parse('{{ chart_data_json|safe }}');
+        const categoryData = JSON.parse('{{ category_data_json|safe }}');
         
         // Atur tanggal default pada form
         document.addEventListener('DOMContentLoaded', function() {
@@ -1119,5 +1119,6 @@
         }
     </script>
     <script src="{{ url_for('static', filename='js/dashboard-period.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/format-ribuan.js') }}"></script>
 </body>
 </html>
