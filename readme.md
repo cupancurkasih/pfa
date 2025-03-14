@@ -44,6 +44,7 @@ Personal Financial Assistant by CUPK merupakan aplikasi sederhana untuk membantu
 ### Prasyarat
 - Python 3.7 atau lebih tinggi
 - pip (Python package manager)
+- pip install --only-binary=:all: numpy pandas (opsional)
 
 ### Langkah-langkah Instalasi
 
