@@ -52,9 +52,9 @@ Personal Financial Assistant by CUPK merupakan aplikasi sederhana untuk membantu
 
 2. Buat dan aktifkan virtual environment (opsional tapi direkomendasikan)
    ```
-   python -m venv venv
-   source venv/bin/activate  # Untuk Linux/Mac
-   venv\Scripts\activate     # Untuk Windows
+   python -m venv .venv
+   source .venv/bin/activate  # Untuk Linux/Mac
+   .venv\Scripts\activate     # Untuk Windows
    ```
 
 3. Install semua dependencies
