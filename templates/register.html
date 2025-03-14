@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Personal Financial Assistant - CUPK</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="/pfa/{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="auth-container">
@@ -57,6 +57,6 @@
         </div>
     </div>
     
-    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+    <script src="/pfa/{{ url_for('static', filename='js/register.js') }}"></script>
 </body>
 </html>
