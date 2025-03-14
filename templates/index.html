@@ -475,8 +475,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.7.1/chart.min.js"></script>
     <script>
         // Mendapatkan data chart dari backend dalam format JSON
-        const chartData = {{ chart_data_json|safe }};
-        const categoryData = {{ category_data_json|safe }};
+        const chartData = JSON.parse('{{ chart_data_json|safe }}');
+        const categoryData = JSON.parse('{{ category_data_json|safe }}');
         
         // Atur tanggal default pada form
         document.addEventListener('DOMContentLoaded', function() {
